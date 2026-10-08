@@ -145,3 +145,67 @@ function render(notesToRender = notes) {
   updateNoteCount(notes.length);
 }
 
+// ====================================================
+// 6. Add Note & Validation
+// ====================================================
+function handleAddNote(event) {
+  event.preventDefault();
+
+  const textValue = noteInput.value.trim();
+  const categoryValue = noteCategory.value;
+
+  // Validation Check 1: Empty or whitespace
+  if (textValue === "") {
+    errorMessage.textContent = "Please type a note first.";
+    noteInput.focus();
+    return;
+  }
+
+  // Validation Check 2: Max 200 characters
+  if (textValue.length > 200) {
+    errorMessage.textContent = "Notes must be 200 characters or fewer.";
+    noteInput.focus();
+    return;
+  }
+
+  // Clear any existing error message
+  errorMessage.textContent = "";
+
+  // Create new note object
+  const newNote = {
+    id: Date.now().toString(),
+    text: textValue,
+    category: categoryValue,
+    createdAt: formatDateTime(new Date())
+  };
+
+  // Add to front of array so newest appears first
+  notes.unshift(newNote);
+
+  // Persist to localStorage
+  saveNotesToStorage();
+
+  // Reset input field
+  noteInput.value = "";
+  noteInput.focus();
+
+  // Reset search filter if active to display the newly added note
+  searchInput.value = "";
+
+  // Re-render
+  render();
+}
+
+// ====================================================
+// 7. Delete Note
+// ====================================================
+function deleteNote(idToDelete) {
+  // Filter out the deleted note
+  notes = notes.filter((note) => note.id !== idToDelete);
+
+  // Save changes
+  saveNotesToStorage();
+
+  // Filter with current search query if applicable
+  applySearch();
+}
