@@ -209,3 +209,42 @@ function deleteNote(idToDelete) {
   // Filter with current search query if applicable
   applySearch();
 }
+
+// ====================================================
+// 8. Search Feature (Case-insensitive)
+// ====================================================
+function applySearch() {
+  const query = searchInput.value.trim().toLowerCase();
+  if (query === "") {
+    render(notes);
+  } else {
+    const filtered = notes.filter((note) =>
+      note.text.toLowerCase().includes(query)
+    );
+    render(filtered);
+  }
+}
+// ====================================================
+// 9. Bonus: Clear All Feature
+// ====================================================
+function handleClearAll() {
+  if (notes.length === 0) return;
+  const confirmed = confirm("Delete all notes?");
+  if (confirmed) {
+    notes = [];
+    saveNotesToStorage();
+    searchInput.value = "";
+    errorMessage.textContent = "";
+    render();
+  }
+}
+// ====================================================
+// 10. Event Listeners & Initialization
+// ====================================================
+noteForm.addEventListener("submit", handleAddNote);
+searchInput.addEventListener("input", applySearch);
+if (clearAllBtn) {
+  clearAllBtn.addEventListener("click", handleClearAll);
+}
+// Initial render when the script loads
+render();
